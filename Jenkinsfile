@@ -9,33 +9,32 @@ pipeline {
                     reuseNode true
                 }
             }
-            steps {
-               bat '''
-                    ls -la
+            steps-dotnet-sdk {
+                bat '''
+                    dir /s
                     node --version
                     npm --version
                     npm ci
                     npm run build
-                    ls -la
-                '''             
+                    dir /s
+                '''
             }
         }
 
-        stage("Test") {
-             agent {
+        stage('Test') {
+            agent {
                 docker {
                     image 'node:18-alpine'
                     reuseNode true
                 }
             }
-            steps{
+            steps {
                 bat '''
-                    test -f build/index.html
+                    if not exist build\\index.html exit /b 1
                     npm test
                 '''
             }
         }
-    
 
         stage('Deploy') {
             agent {
@@ -45,15 +44,14 @@ pipeline {
                 }
             }
             steps {
-               bat '''
-                   npm install netlify-cli -g
-                   netlify --version
-                '''             
+                bat '''
+                    npm install netlify-cli -g
+                    netlify --version
+                '''
             }
         }
-
     }
-    
+
     post {
         always {
             junit 'test-results/junit.xml'
