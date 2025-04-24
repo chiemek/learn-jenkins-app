@@ -10,7 +10,7 @@ pipeline {
                 }
             }
             steps {
-               sh '''
+               bat '''
                     ls -la
                     node --version
                     npm --version
@@ -29,7 +29,7 @@ pipeline {
                 }
             }
             steps{
-                sh '''
+                bat '''
                     test -f build/index.html
                     npm test
                 '''
@@ -37,6 +37,21 @@ pipeline {
         }
     }
 
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+               bat '''
+                   npm install netlify-cli -g
+                   netlify --version
+                '''             
+            }
+        }
+    
     post {
         always {
             junit 'test-results/junit.xml'
