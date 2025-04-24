@@ -9,7 +9,7 @@ pipeline {
                     reuseNode true
                 }
             }
-            steps-dotnet-sdk {
+            steps {
                 bat '''
                     dir /s
                     node --version
